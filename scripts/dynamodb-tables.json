@@ -1,0 +1,20 @@
+{
+  "tables": [
+    {
+      "TableName": "bellx-users",
+      "PartitionKey": { "Name": "userId", "Type": "S" }
+    },
+    {
+      "TableName": "bellx-sessions",
+      "PartitionKey": { "Name": "sessionId", "Type": "S" }
+    },
+    {
+      "TableName": "bellx-events",
+      "PartitionKey": { "Name": "eventId", "Type": "S" }
+    },
+    {
+      "TableName": "bellx-config",
+      "PartitionKey": { "Name": "configKey", "Type": "S" }
+    }
+  ]
+}

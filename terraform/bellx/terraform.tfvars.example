@@ -1,0 +1,25 @@
+# Copie para terraform.tfvars na raiz desta pasta (ficheiro ignorado pelo git),
+# OU use diretamente: terraform plan -var-file=envs/sa-east-1.tfvars
+#
+# O ficheiro envs/sa-east-1.tfvars ja vem preenchido para a VPC BellX em SP (revê IDs se mudares de conta).
+
+aws_region  = "sa-east-1"
+vpc_id      = "vpc-xxxxxxxx"
+
+# Alinhar ao script PowerShell (-BucketSuffix "-sae1")
+bucket_suffix = "-sae1"
+
+# Opcional: HTTPS no ALB (certificado na mesma regiao)
+# acm_certificate_arn = "arn:aws:acm:sa-east-1:ACCOUNT:certificate/xxxx"
+
+# Depois do primeiro push na ECR:
+# backend_image = "ACCOUNT.dkr.ecr.sa-east-1.amazonaws.com/bellx-backend:latest"
+
+# Se as roles IAM ja existem e nao quer que o Terraform as recrie:
+# manage_iam_roles = false
+
+# Se voce ja criou recursos com o script PowerShell, importe antes do apply, por exemplo:
+# terraform import aws_ecr_repository.backend bellx-backend
+# terraform import aws_ecs_cluster.bellx bellx-cluster
+# terraform import aws_elasticache_serverless_cache.redis bellx-redis-cache
+# terraform import 'aws_s3_bucket.assets[\"bellx-site-images\"]' bellx-site-images-sae1

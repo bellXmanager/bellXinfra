@@ -1,0 +1,26 @@
+{
+    "Region": "sa-east-1",
+    "AccountId": "790762402245",
+    "VpcId": "vpc-04f95b0a5d7518417",
+    "PublicSubnets": [
+        "subnet-0c9da97f7755d357f",
+        "subnet-0c82439b1b010c6be"
+    ],
+    "PrivateSubnets": [
+        "subnet-037a7429125dd26ca",
+        "subnet-0f5e4ecb5db142da6"
+    ],
+    "SgEndpoints": "sg-043456568851c9c9a",
+    "SgRedis": "sg-040c480acf479cbdd",
+    "SgAlb": "sg-011282abb45dc8168",
+    "SgBackend": "sg-0e663e8b34b625734",
+    "SgDb": "sg-0b42cc6a916ba87ed",
+    "ElastiCacheName": "bellx-redis-cache",
+    "EcsCluster": "bellx-cluster",
+    "S3Buckets": [
+        "bellx-site-images-sae1",
+        "bellx-site-static-sae1",
+        "bellx-site-videos-sae1"
+    ],
+    "Note": "Snapshot sa-east-1. Infra adicional (ALB, ECR, DynamoDB, SSM, etc.) pode ser gerida com terraform/bellx (ver README) ou com scripts/provision-bellx-sa-east-1.ps1. Mantém um unico dono (Terraform OU script) por recurso para evitar drift."
+}
