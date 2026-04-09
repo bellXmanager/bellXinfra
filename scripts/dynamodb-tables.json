@@ -2,6 +2,25 @@
   "$schemaHint": "PartitionKey.Type: S (string). Campos Entity sao documentacao; script/Terraform usam so TableName + PartitionKey.",
   "tables": [
     {
+      "TableName": "Companions",
+      "PartitionKey": { "Name": "id", "Type": "S" },
+      "Entity": {
+        "label": "Companion",
+        "domain": "Perfis de companions (listagem publica, contacto, localizacao).",
+        "attributes": [
+          { "name": "id", "role": "partitionKey", "description": "UUID" },
+          { "name": "name", "description": "Nome" },
+          { "name": "phone", "description": "Telefone" },
+          { "name": "description", "description": "Texto" },
+          { "name": "city", "description": "Cidade" },
+          { "name": "photos", "description": "Lista de URLs ou keys (convencao app)" },
+          { "name": "videos", "description": "Lista de URLs ou keys" },
+          { "name": "createdAt", "description": "ISO-8601" },
+          { "name": "updatedAt", "description": "ISO-8601" }
+        ]
+      }
+    },
+    {
       "TableName": "Advertisers",
       "PartitionKey": { "Name": "advertiserId", "Type": "S" },
       "Entity": {
