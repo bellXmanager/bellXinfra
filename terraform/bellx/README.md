@@ -1,5 +1,7 @@
 # BellX — Terraform (`sa-east-1`)
 
+Visão geral do repositório `bellXinfra` (scripts, `dynamodb-tables.json`): **[`../../README.md`](../../README.md)**.
+
 Infra declarativa para o núcleo BellX na AWS, assumindo **VPC, subnets e security groups já existentes** (mesmo desenho do `bellXinfra/scripts/provision-bellx-sa-east-1.ps1`). A partir da raiz do monorepo Fifty 2.0, esta pasta é `bellXinfra/terraform/bellx`.
 
 ## O que o Terraform gere
