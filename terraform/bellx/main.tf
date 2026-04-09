@@ -35,18 +35,22 @@ resource "aws_iam_role_policy" "backend_secrets" {
 }
 
 data "aws_iam_role" "ecs_execution" {
-  count = var.manage_iam_roles ? 0 : 1
+  count = var.manage_iam_roles ? 0 : (var.ecs_execution_role_arn == "" ? 1 : 0)
   name  = "bellx-ecs-task-execution-role"
 }
 
 data "aws_iam_role" "backend" {
-  count = var.manage_iam_roles ? 0 : 1
+  count = var.manage_iam_roles ? 0 : (var.backend_task_role_arn == "" ? 1 : 0)
   name  = "bellx-backend-role"
 }
 
 locals {
-  ecs_execution_role_arn = var.manage_iam_roles ? aws_iam_role.ecs_execution[0].arn : data.aws_iam_role.ecs_execution[0].arn
-  backend_task_role_arn  = var.manage_iam_roles ? aws_iam_role.backend[0].arn : data.aws_iam_role.backend[0].arn
+  ecs_execution_role_arn = var.manage_iam_roles ? aws_iam_role.ecs_execution[0].arn : (
+    var.ecs_execution_role_arn != "" ? var.ecs_execution_role_arn : data.aws_iam_role.ecs_execution[0].arn
+  )
+  backend_task_role_arn = var.manage_iam_roles ? aws_iam_role.backend[0].arn : (
+    var.backend_task_role_arn != "" ? var.backend_task_role_arn : data.aws_iam_role.backend[0].arn
+  )
 }
 
 resource "aws_ecs_cluster" "bellx" {
@@ -68,8 +72,8 @@ resource "aws_s3_bucket" "assets" {
 }
 
 resource "aws_s3_bucket_public_access_block" "assets" {
-  for_each = aws_s3_bucket.assets
-  bucket   = each.value.id
+  for_each = toset(var.s3_bucket_bases)
+  bucket   = aws_s3_bucket.assets[each.key].id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -94,7 +98,7 @@ resource "aws_elasticache_serverless_cache" "redis" {
   engine               = "valkey"
   name                 = var.redis_cache_name
   major_engine_version = "8"
-  description          = "BellX Valkey"
+  description          = "BellX Valkey sa-east-1"
 
   subnet_ids         = local.private_subnet_ids
   security_group_ids = [data.aws_security_group.redis.id]
@@ -107,6 +111,12 @@ resource "aws_elasticache_serverless_cache" "redis" {
     ecpu_per_second {
       maximum = 5000
     }
+  }
+
+  # ModifyServerlessCache so permite um campo por pedido; import + drift de blocos
+  # disparam varios deltas. Limites e versao ja estao no recurso importado.
+  lifecycle {
+    ignore_changes = [cache_usage_limits]
   }
 }
 
@@ -222,6 +232,14 @@ resource "aws_ecs_task_definition" "backend" {
           protocol      = "tcp"
         }
       ]
+      environment = concat(
+        [
+          { name = "PORT", value = tostring(var.container_port) },
+          { name = "AWS_REGION", value = var.aws_region },
+          { name = "REDIS_TLS", value = "true" }
+        ],
+        var.ecs_task_extra_environment
+      )
       logConfiguration = {
         logDriver = "awslogs"
         options = {

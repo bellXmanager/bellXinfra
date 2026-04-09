@@ -1,20 +1,130 @@
 {
+  "$schemaHint": "PartitionKey.Type: S (string). Campos Entity sao documentacao; script/Terraform usam so TableName + PartitionKey.",
   "tables": [
     {
+      "TableName": "Advertisers",
+      "PartitionKey": { "Name": "advertiserId", "Type": "S" },
+      "Entity": {
+        "label": "Anunciante",
+        "domain": "Contas de publicidade no BellX (região oficial sa-east-1); metadata comercial e facturação.",
+        "attributes": [
+          { "name": "advertiserId", "role": "partitionKey", "description": "ID unico do anunciante" },
+          { "name": "name", "description": "Nome publico ou marca" },
+          { "name": "slug", "description": "Identificador URL-friendly (opcional)" },
+          { "name": "contactEmail", "description": "Email principal" },
+          { "name": "status", "description": "active | suspended | pending — convencao app" },
+          { "name": "createdAt", "description": "ISO-8601" },
+          { "name": "updatedAt", "description": "ISO-8601" }
+        ]
+      }
+    },
+    {
+      "TableName": "Media",
+      "PartitionKey": { "Name": "mediaId", "Type": "S" },
+      "Entity": {
+        "label": "Midia",
+        "domain": "Metadados de ficheiros servidos via S3/CloudFront (imagens, video, texto); URL final aponta para CDN.",
+        "attributes": [
+          { "name": "mediaId", "role": "partitionKey", "description": "ID unico do asset" },
+          { "name": "type", "description": "image | video | static | document" },
+          { "name": "bucketKey", "description": "Chave no bucket S3 (bellx-site-*)" },
+          { "name": "cdnUrl", "description": "URL CloudFront ou presigned (preenchido pela API)" },
+          { "name": "mimeType", "description": "Content-Type" },
+          { "name": "ownerUserId", "description": "Utilizador ou advertiser dono" },
+          { "name": "metadata", "description": "Mapa JSON livre (dimensoes, duracao, etc.)" },
+          { "name": "createdAt", "description": "ISO-8601" }
+        ]
+      }
+    },
+    {
+      "TableName": "Profiles",
+      "PartitionKey": { "Name": "userId", "Type": "S" },
+      "Entity": {
+        "label": "Perfil",
+        "domain": "Perfil publico/privado do utilizador BellX; alinhado a bellx-users (mesmo userId).",
+        "attributes": [
+          { "name": "userId", "role": "partitionKey", "description": "Igual ao userId em bellx-users" },
+          { "name": "displayName", "description": "Nome de exibicao" },
+          { "name": "bio", "description": "Texto curto" },
+          { "name": "avatarMediaId", "description": "FK logica para Media.mediaId" },
+          { "name": "preferences", "description": "JSON (idioma, notificacoes)" },
+          { "name": "updatedAt", "description": "ISO-8601" }
+        ]
+      }
+    },
+    {
+      "TableName": "Transactions",
+      "PartitionKey": { "Name": "transactionId", "Type": "S" },
+      "Entity": {
+        "label": "Transacao",
+        "domain": "Eventos financeiros ou de sistema (compras, creditos, ledger); imutavel por defeito.",
+        "attributes": [
+          { "name": "transactionId", "role": "partitionKey", "description": "ID idempotente (ex.: UUID)" },
+          { "name": "advertiserId", "description": "FK para Advertisers (opcional)" },
+          { "name": "userId", "description": "Utilizador associado" },
+          { "name": "amountMinor", "description": "Montante em unidade menor (inteiro)" },
+          { "name": "currency", "description": "ex.: BRL, USD" },
+          { "name": "kind", "description": "payment | refund | adjustment" },
+          { "name": "reference", "description": "Ref. gateway pagamento" },
+          { "name": "createdAt", "description": "ISO-8601" }
+        ]
+      }
+    },
+    {
       "TableName": "bellx-users",
-      "PartitionKey": { "Name": "userId", "Type": "S" }
+      "PartitionKey": { "Name": "userId", "Type": "S" },
+      "Entity": {
+        "label": "Utilizador (conta)",
+        "domain": "Autenticacao e conta base BellX.",
+        "attributes": [
+          { "name": "userId", "role": "partitionKey", "description": "ID unico (sub cognito / uuid)" },
+          { "name": "email", "description": "Email login" },
+          { "name": "emailVerified", "description": "boolean" },
+          { "name": "createdAt", "description": "ISO-8601" }
+        ]
+      }
     },
     {
       "TableName": "bellx-sessions",
-      "PartitionKey": { "Name": "sessionId", "Type": "S" }
+      "PartitionKey": { "Name": "sessionId", "Type": "S" },
+      "Entity": {
+        "label": "Sessao",
+        "domain": "Sessoes / refresh tokens (ou cache pointer).",
+        "attributes": [
+          { "name": "sessionId", "role": "partitionKey", "description": "Token/id de sessao" },
+          { "name": "userId", "description": "Dono" },
+          { "name": "expiresAt", "description": "TTL epoch ou ISO" },
+          { "name": "device", "description": "User-agent resumido (opcional)" }
+        ]
+      }
     },
     {
       "TableName": "bellx-events",
-      "PartitionKey": { "Name": "eventId", "Type": "S" }
+      "PartitionKey": { "Name": "eventId", "Type": "S" },
+      "Entity": {
+        "label": "Evento",
+        "domain": "Analytics / auditoria append-only.",
+        "attributes": [
+          { "name": "eventId", "role": "partitionKey", "description": "UUID" },
+          { "name": "type", "description": "nome do evento" },
+          { "name": "payload", "description": "JSON" },
+          { "name": "userId", "description": "opcional" },
+          { "name": "createdAt", "description": "ISO-8601" }
+        ]
+      }
     },
     {
       "TableName": "bellx-config",
-      "PartitionKey": { "Name": "configKey", "Type": "S" }
+      "PartitionKey": { "Name": "configKey", "Type": "S" },
+      "Entity": {
+        "label": "Configuracao",
+        "domain": "Flags e K/V operacionais (nao segredos).",
+        "attributes": [
+          { "name": "configKey", "role": "partitionKey", "description": "ex.: features/maintenance" },
+          { "name": "value", "description": "String ou JSON serializado" },
+          { "name": "updatedAt", "description": "ISO-8601" }
+        ]
+      }
     }
   ]
 }

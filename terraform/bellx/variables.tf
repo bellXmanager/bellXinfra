@@ -84,10 +84,31 @@ variable "backend_image" {
   default     = ""
 }
 
+variable "ecs_task_extra_environment" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "Variaveis extra na task (ex.: BELLX_ENABLE_DB_API). Redis/Dynamo via SSM."
+  default     = []
+}
+
 variable "manage_iam_roles" {
   type        = bool
   description = "Cria roles bellx-ecs-task-execution-role e bellx-backend-role. Se ja existirem, importe-as para o state antes do apply."
   default     = true
+}
+
+variable "ecs_execution_role_arn" {
+  type        = string
+  description = "Opcional. ARN fixo da execution role (ex.: arn:aws:iam::ACCOUNT:role/bellx-ecs-task-execution-role). Quando preenchido com manage_iam_roles=false, evita data.aws_iam_role (util se iam:GetRole falhar com Leapp)."
+  default     = ""
+}
+
+variable "backend_task_role_arn" {
+  type        = string
+  description = "Opcional. ARN fixo da task role backend (ex.: arn:aws:iam::ACCOUNT:role/bellx-backend-role)."
+  default     = ""
 }
 
 variable "policy_dir" {
@@ -97,7 +118,7 @@ variable "policy_dir" {
 }
 
 variable "default_tags" {
-  type = map(string)
+  type        = map(string)
   description = "Tags aplicadas a recursos que suportam default_tags do provider."
   default = {
     Project   = "BellX"

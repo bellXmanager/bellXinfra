@@ -18,9 +18,37 @@ Infra declarativa para o núcleo BellX na AWS, assumindo **VPC, subnets e securi
 
 ## Pré-requisitos
 
-- Terraform ≥ 1.5, AWS CLI configurado (ex.: Leapp)
+- Terraform ≥ 1.5, AWS CLI configurado (ex.: Leapp). Com `manage_iam_roles = false`, preenche **`ecs_execution_role_arn`** e **`backend_task_role_arn`** no `tfvars` (ver `envs/sa-east-1.tfvars`) para evitar `iam:GetRole` quando o endpoint IAM responde `InvalidClientTokenId` com Leapp.
 - Na VPC: SGs `bellx-endpoints-sg`, `bellx-redis-sg`, `bellx-alb-sg`, `bellx-backend-sg` (nomes de security group)
 - Pelo menos **2 subnets públicas** e **2 privadas**
+
+### SSM `/bellx/*` sem `apply` completo
+
+Para alinhar parâmetros com o Valkey real e os nomes das tabelas DynamoDB:
+
+```powershell
+cd bellXinfra/scripts
+.\sync-bellx-ssm-sa-east-1.ps1
+```
+
+### Verificação (“teste de estrutura”)
+
+Na pasta `bellXback`: `npm run verify:structure` — testes, contratos AWS em `sa-east-1`, `terraform fmt`/`validate` e **`terraform plan`**.  
+Atalho sem plan: `npm run verify:structure:aws`.
+
+## ECS: "unable to assume the role bellx-backend-role"
+
+`aws ecs update-service --force-new-deployment` **não** altera IAM — só redeploya. O erro de *assume role* só some depois de corrigir a **trust policy** das roles e de existir a **task execution role** referenciada na task definition.
+
+As roles precisam de principal `ecs-tasks.amazonaws.com` (ver `scripts/policies/ecs-task-trust.json`). **Cuidado:** uma trust policy com `Condition` em `aws:SourceArn` **tem de usar a região onde o ECS corre** (ex.: `arn:aws:ecs:sa-east-1:CONTA:*`). Se estiver `us-east-1`/`us-east-2` errado, o assume falha mesmo com o serviço certo.
+
+A role **`bellx-ecs-task-execution-role`** tem de existir (ECR pull, logs). O script `fix-ecs-iam-trust-sa-east-1.ps1` cria-a se faltar e alinha o trust das duas roles.
+
+**Ordem:**
+
+1. `cd bellXinfra/scripts` → `.\fix-ecs-iam-trust-sa-east-1.ps1`
+2. `aws ecs update-service --cluster bellx-cluster --service bellx-backend --force-new-deployment --region sa-east-1`
+3. Confirmar: `aws ecs describe-services --cluster bellx-cluster --services bellx-backend --region sa-east-1 --query "services[0].events[0].message"`
 
 ## Comandos
 
