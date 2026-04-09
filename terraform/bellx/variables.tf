@@ -89,8 +89,14 @@ variable "ecs_task_extra_environment" {
     name  = string
     value = string
   }))
-  description = "Variaveis extra na task (ex.: BELLX_ENABLE_DB_API). Redis/Dynamo via SSM."
+  description = "Variaveis extra na task (ex.: BELLX_ENABLE_DB_API). S3 buckets e BELLX_COMPANIONS_TABLE sao injetados automaticamente na task; Redis via SSM no codigo."
   default     = []
+}
+
+variable "companions_table_name" {
+  type        = string
+  description = "Nome da tabela DynamoDB Companions (alinhado a dynamodb-tables.json)."
+  default     = "Companions"
 }
 
 variable "manage_iam_roles" {

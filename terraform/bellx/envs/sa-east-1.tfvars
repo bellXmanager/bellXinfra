@@ -18,6 +18,14 @@ backend_task_role_arn  = "arn:aws:iam::790762402245:role/bellx-backend-role"
 
 backend_image = "790762402245.dkr.ecr.sa-east-1.amazonaws.com/bellx-backend:latest"
 
+# Nome da tabela Companions (default Companions; igual a dynamodb-tables.json)
+# companions_table_name = "Companions"
+
+# Variaveis extra na task ECS (S3_BUCKET_* e BELLX_COMPANIONS_TABLE ja vao no main.tf)
+# ecs_task_extra_environment = [
+#   { name = "BELLX_ENABLE_DB_API", value = "0" },
+# ]
+
 # Certificado ACM na mesma regiao (opcional):
 # acm_certificate_arn = "arn:aws:acm:sa-east-1:790762402245:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 

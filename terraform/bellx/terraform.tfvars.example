@@ -15,6 +15,14 @@ bucket_suffix = "-sae1"
 # Depois do primeiro push na ECR:
 # backend_image = "ACCOUNT.dkr.ecr.sa-east-1.amazonaws.com/bellx-backend:latest"
 
+# Tabela DynamoDB Companions (opcional; default Companions)
+# companions_table_name = "Companions"
+
+# Extras na task (S3_BUCKET_IMAGES, S3_BUCKET_VIDEOS, BELLX_COMPANIONS_TABLE vêm do Terraform)
+# ecs_task_extra_environment = [
+#   { name = "BELLX_ENABLE_DB_API", value = "0" },
+# ]
+
 # Se as roles IAM ja existem e nao quer que o Terraform as recrie:
 # manage_iam_roles = false
 

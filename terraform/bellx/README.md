@@ -9,7 +9,7 @@ Infra declarativa para o núcleo BellX na AWS, assumindo **VPC, subnets e securi
 - Tabelas DynamoDB (definição em `bellXinfra/scripts/dynamodb-tables.json`, caminho relativo ao Terraform: `../../scripts/`)
 - ElastiCache Serverless (Valkey), log group CloudWatch, ALB + target group + listeners
 - Parâmetros SSM `/bellx/redis/*` e `/bellx/dynamodb/table/*`
-- Task definition + serviço Fargate **se** `backend_image` estiver definido
+- Task definition + serviço Fargate **se** `backend_image` estiver definido (env na task: `PORT`, `AWS_REGION`, `REDIS_TLS`, **`S3_BUCKET_IMAGES`**, **`S3_BUCKET_VIDEOS`** — nomes dos buckets criados —, **`BELLX_COMPANIONS_TABLE`**, + `ecs_task_extra_environment`)
 
 ## O que fica de fora (por agora)
 
@@ -58,6 +58,17 @@ terraform init
 terraform plan  -var-file=envs/sa-east-1.tfvars
 terraform apply -var-file=envs/sa-east-1.tfvars
 ```
+
+### Script (plan / apply + novo deploy ECS)
+
+Na pasta `bellXinfra/scripts` (credenciais AWS ativas, ex. Leapp):
+
+```powershell
+.\deploy-bellx-terraform-ecs-sa-east-1.ps1 -PlanOnly
+.\deploy-bellx-terraform-ecs-sa-east-1.ps1 -Apply -ForceEcsDeployment
+```
+
+Depois do `apply` que altera a task definition, o ECS pode criar tasks com a nova revisão; `-ForceEcsDeployment` garante rollout mesmo quando a imagem não mudou.
 
 `envs/sa-east-1.tfvars` usa `manage_iam_roles = false` quando as roles já foram criadas pelo script (evita conflito). Para stack nova só Terraform, use `manage_iam_roles = true` nesse ficheiro ou noutro `-var-file`.
 

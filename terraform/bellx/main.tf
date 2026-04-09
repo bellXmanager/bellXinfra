@@ -236,7 +236,19 @@ resource "aws_ecs_task_definition" "backend" {
         [
           { name = "PORT", value = tostring(var.container_port) },
           { name = "AWS_REGION", value = var.aws_region },
-          { name = "REDIS_TLS", value = "true" }
+          { name = "REDIS_TLS", value = "true" },
+          {
+            name  = "S3_BUCKET_IMAGES",
+            value = aws_s3_bucket.assets["bellx-site-images"].bucket
+          },
+          {
+            name  = "S3_BUCKET_VIDEOS",
+            value = aws_s3_bucket.assets["bellx-site-videos"].bucket
+          },
+          {
+            name  = "BELLX_COMPANIONS_TABLE",
+            value = var.companions_table_name
+          }
         ],
         var.ecs_task_extra_environment
       )
