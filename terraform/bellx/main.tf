@@ -34,6 +34,13 @@ resource "aws_iam_role_policy" "backend_secrets" {
   policy = file("${local.policy_dir}/backend-secrets-read.json")
 }
 
+resource "aws_iam_role_policy" "backend_s3_presign" {
+  count  = var.manage_iam_roles ? 1 : 0
+  name   = "BellXS3PresignUpload"
+  role   = aws_iam_role.backend[0].id
+  policy = file("${local.policy_dir}/bellx-backend-s3-presign.json")
+}
+
 data "aws_iam_role" "ecs_execution" {
   count = var.manage_iam_roles ? 0 : (var.ecs_execution_role_arn == "" ? 1 : 0)
   name  = "bellx-ecs-task-execution-role"

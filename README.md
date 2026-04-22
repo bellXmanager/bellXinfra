@@ -9,7 +9,7 @@ Repositório de **infraestrutura como código** e **scripts operacionais** para 
 | **`terraform/bellx/`** | Stack principal: IAM (opcional), ECS Fargate, ECR, ALB, DynamoDB, S3, ElastiCache Serverless (Valkey), SSM, CloudWatch. Ver o README dedicado em baixo. |
 | **`scripts/`** | PowerShell: deploy Terraform + ECS, sync SSM, correção de trust IAM, provisionamento legado, `dynamodb-tables.json`, políticas JSON. |
 | **`scripts/dynamodb-tables.json`** | Definição das tabelas DynamoDB (partilhada entre Terraform e documentação). |
-| **`scripts/policies/`** | Trust e policies IAM (ex.: ECS task). |
+| **`scripts/policies/`** | Trust e policies IAM (ex.: ECS task), S3 presign/CORS, guia [**IAM Identity Center / SSO**](scripts/policies/IAM-IDENTITY-CENTER.md). |
 
 ## Documentação detalhada
 

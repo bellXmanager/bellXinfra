@@ -6,7 +6,7 @@ Infra declarativa para o núcleo BellX na AWS, assumindo **VPC, subnets e securi
 
 ## O que o Terraform gere
 
-- IAM (opcional): `bellx-ecs-task-execution-role`, `bellx-backend-role` + policy de leitura de secrets
+- IAM (opcional): `bellx-ecs-task-execution-role`, `bellx-backend-role` + policy de leitura de secrets + **`BellXS3PresignUpload`** (`scripts/policies/bellx-backend-s3-presign.json`) para presign S3
 - ECS cluster, repositório ECR, buckets S3 + bloqueio de acesso público
 - Tabelas DynamoDB (definição em `bellXinfra/scripts/dynamodb-tables.json`, caminho relativo ao Terraform: `../../scripts/`)
 - ElastiCache Serverless (Valkey), log group CloudWatch, ALB + target group + listeners
