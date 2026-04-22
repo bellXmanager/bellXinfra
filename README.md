@@ -10,6 +10,7 @@ Repositório de **infraestrutura como código** e **scripts operacionais** para 
 | **`scripts/`** | PowerShell: deploy Terraform + ECS, sync SSM, correção de trust IAM, provisionamento legado, `dynamodb-tables.json`, políticas JSON. |
 | **`scripts/dynamodb-tables.json`** | Definição das tabelas DynamoDB (partilhada entre Terraform e documentação). |
 | **`scripts/policies/`** | Trust e policies IAM (ex.: ECS task), S3 presign/CORS, guia [**IAM Identity Center / SSO**](scripts/policies/IAM-IDENTITY-CENTER.md). |
+| **`deploy/`** | [**PM2 + Nginx**](deploy/README.md) exemplo para VPS (BellX API **3050**, Next interno **3002**). |
 
 ## Documentação detalhada
 
